@@ -1,22 +1,22 @@
 import type { Metadata } from 'next';
-import TiktokDownloader from '@/app/components/TiktokDownloader';
+import MediaTool from '@/app/components/MediaTool';
 
 export const metadata: Metadata = {
-  title: 'Descargador de TikTok Sin Marca de Agua Gratis',
+  title: 'All-in-One Media Utility — Gestión de Contenido Multimedia',
   description:
-    'Descarga videos de TikTok gratis y sin marca de agua en segundos. Solo pega el link, sin registro ni aplicaciones.',
+    'Herramienta de gestión y visualización de contenido multimedia para redes sociales. Compatible con TikTok, YouTube e Instagram.',
   keywords: [
-    'descargar tiktok sin marca de agua',
-    'bajar videos tiktok gratis',
-    'tiktok downloader',
-    'descargar tiktok mp4',
+    'herramienta multimedia online',
+    'gestión contenido redes sociales',
+    'media utility online gratis',
+    'procesar video online',
   ],
 };
 
-export default function TiktokPage() {
+export default function MediaToolPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 pb-8 px-4 max-w-6xl mx-auto">
-      <TiktokDownloader />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 pb-12 px-4 max-w-6xl mx-auto">
+      <MediaTool />
     </div>
   );
 }

@@ -4,47 +4,47 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Toolifast - Herramientas Online Gratis',
   description:
-    'Descarga TikToks, genera texto estilizado, convierte imágenes a PDF, usa IA y más herramientas gratis. Sin registro, sin límites.',
+    'Herramientas online gratuitas: editor de texto, convertidor de archivos, calculadora de fechas, asistente de inteligencia artificial y más. Sin registro.',
 };
 
 const tools = [
   {
     id: 'text-style',
     href: '/tools/text-style',
-    title: 'Generador de Letras Raras',
-    description: 'Convierte texto normal a letras estilizadas para TikTok, Instagram, Free Fire',
-    icon: '🎨',
+    title: 'Generador de Letras',
+    description: 'Transforma texto a estilos tipográficos especiales para perfiles y publicaciones',
+    icon: '🔤',
     color: 'from-purple-500 to-pink-500',
   },
   {
     id: 'invisible-text',
     href: '/tools/invisible-text',
-    title: 'Texto Invisible',
-    description: 'Genera caracteres invisibles para nombres o mensajes',
-    icon: '👻',
+    title: 'Caracteres Especiales',
+    description: 'Genera caracteres Unicode especiales para personalizar textos y nombres',
+    icon: '✦',
     color: 'from-blue-500 to-cyan-500',
   },
   {
     id: 'image-to-pdf',
     href: '/tools/image-to-pdf',
     title: 'Imagen a PDF',
-    description: 'Convierte imágenes a PDF desde tu celular o PC',
+    description: 'Convierte imágenes JPG o PNG a formato PDF fácilmente',
     icon: '📄',
     color: 'from-green-500 to-emerald-500',
   },
   {
-    id: 'tiktok-downloader',
+    id: 'media-utility',
     href: '/tools/tiktok',
-    title: 'Descargar TikTok',
-    description: 'Descarga videos de TikTok sin marca de agua, rápido y gratis',
-    icon: '📱',
-    color: 'from-red-500 to-orange-500',
+    title: 'Procesador Multimedia',
+    description: 'Analiza y procesa contenido de plataformas de video. Exporta en diferentes formatos',
+    icon: '🎞️',
+    color: 'from-slate-500 to-gray-600',
   },
   {
     id: 'notepad',
     href: '/tools/notepad',
     title: 'Bloc de Notas',
-    description: 'Editor de texto online, rápido y sin registro',
+    description: 'Editor de texto online ligero, rápido y sin registro',
     icon: '📝',
     color: 'from-yellow-500 to-amber-500',
   },
@@ -52,7 +52,7 @@ const tools = [
     id: 'name-generator',
     href: '/tools/name-generator',
     title: 'Generador de Nombres',
-    description: 'Crea nombres únicos y épicos para perfiles y juegos',
+    description: 'Crea nombres únicos y originales para perfiles, proyectos o personajes',
     icon: '⚡',
     color: 'from-indigo-500 to-purple-500',
   },
@@ -60,23 +60,23 @@ const tools = [
     id: 'date-calculator',
     href: '/tools/date-calculator',
     title: 'Calculadora de Fechas',
-    description: 'Calcula fechas, días y tiempo restante fácilmente',
+    description: 'Calcula diferencias entre fechas, días hábiles y tiempo restante',
     icon: '📅',
     color: 'from-teal-500 to-blue-500',
   },
   {
     id: 'image-ai',
     href: '/tools/image-ai',
-    title: 'Generador de Imágenes IA',
-    description: 'Crea imágenes increíbles con inteligencia artificial',
-    icon: '🎭',
+    title: 'Generador de Imágenes',
+    description: 'Crea imágenes a partir de descripciones de texto usando inteligencia artificial',
+    icon: '🎨',
     color: 'from-rose-500 to-pink-500',
   },
   {
     id: 'text-ai',
     href: '/tools/text-ai',
-    title: 'Chat con IA',
-    description: 'Chatea con inteligencia artificial avanzada, gratis',
+    title: 'Asistente de Texto IA',
+    description: 'Redacta, resume y mejora textos con ayuda de inteligencia artificial',
     icon: '🤖',
     color: 'from-violet-500 to-purple-500',
   },
@@ -112,7 +112,7 @@ export default function Home() {
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed">{tool.description}</p>
               <div className="flex items-center justify-between mt-4">
-                <span className="text-blue-600 font-medium text-sm">Usar herramienta</span>
+                <span className="text-blue-600 font-medium text-sm">Abrir herramienta</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"

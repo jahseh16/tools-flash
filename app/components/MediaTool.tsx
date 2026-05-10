@@ -6,8 +6,9 @@ const API_BASE = 'https://api.devmatrixs.lat';
 
 type Format = {
   label: string;
-  type: 'video' | 'audio';
+  type: 'video' | 'audio' | 'image';
   url: string;
+  filename?: string;
 };
 
 type MediaResult = {
@@ -16,6 +17,7 @@ type MediaResult = {
   title: string;
   thumbnail: string;
   author: string;
+  duration?: string;
   formats: Format[];
 };
 
@@ -34,6 +36,7 @@ const PLATFORM_COLORS: Record<string, string> = {
 const FORMAT_ICONS: Record<string, string> = {
   video: '🎬',
   audio: '🎵',
+  image: '🖼️',
 };
 
 function detectPlatform(url: string): string | null {
@@ -43,7 +46,6 @@ function detectPlatform(url: string): string | null {
   return null;
 }
 
-// Componente Slot de Google Ads
 function AdSlot({ id, label }: { id: string; label?: string }) {
   return (
     <div
@@ -71,41 +73,39 @@ export default function MediaTool() {
       setError('Pega un link de TikTok, YouTube o Instagram.');
       return;
     }
-
     setLoading(true);
     setResult(null);
     setError(null);
-
     try {
       const res = await fetch(`${API_BASE}/api/download?url=${encodeURIComponent(url.trim())}`);
       const data: MediaResult = await res.json();
-
       if (!data.success) throw new Error('No se pudo procesar el contenido.');
       setResult(data);
-    } catch (err: any) {
-      setError(err.message || 'Error al conectar con el servidor.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error al conectar con el servidor.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownload = async (format: Format) => {
+  // Descarga directa via <a> — evita problemas de CORS con fetch blob
+  const handleDownload = (format: Format) => {
     setDownloading(format.label);
-    try {
-      const response = await fetch(format.url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = `${result?.title?.slice(0, 40) || 'media'}.${format.type === 'audio' ? 'mp3' : 'mp4'}`;
-      a.click();
-      URL.revokeObjectURL(blobUrl);
-    } catch {
-      // Si el blob falla por CORS, abre directo en nueva pestaña
-      window.open(format.url, '_blank');
-    } finally {
-      setDownloading(null);
-    }
+
+    const ext = format.type === 'audio' ? 'mp3' : format.type === 'image' ? 'jpg' : 'mp4';
+    const filename = format.filename || `${result?.title?.slice(0, 40) || 'media'}.${ext}`;
+
+    const a = document.createElement('a');
+    a.href = format.url;
+    a.download = filename;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Limpia el estado de carga después de un momento
+    setTimeout(() => setDownloading(null), 1500);
   };
 
   return (
@@ -113,19 +113,19 @@ export default function MediaTool() {
 
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg">
-          🌐
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-600 to-gray-700 flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg">
+          🎞️
         </div>
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          All-in-One Media Utility
+          Procesador Multimedia
         </h1>
         <p className="text-gray-500 text-sm max-w-md mx-auto">
-          Herramienta de gestión y visualización de contenido multimedia para redes sociales.
+          Analiza contenido de plataformas de video y exporta en el formato que necesites.
         </p>
       </div>
 
       {/* Slot Google Ads — TOP */}
-      <AdSlot id="ad-slot-top" label="Publicidad" />
+      <AdSlot id="ad-slot-top" />
 
       {/* Plataformas soportadas */}
       <div className="flex justify-center gap-3 mb-6">
@@ -144,7 +144,7 @@ export default function MediaTool() {
       {/* Input */}
       <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Pega el link del contenido:
+          Pega el enlace del contenido:
         </label>
         <div className="flex gap-2">
           <input
@@ -173,13 +173,12 @@ export default function MediaTool() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
-                Obtener
+                Analizar
               </>
             )}
           </button>
         </div>
 
-        {/* Error */}
         {error && (
           <div className="mt-3 flex items-center gap-2 text-red-600 text-sm bg-red-50 border border-red-100 rounded-lg px-4 py-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -190,14 +189,14 @@ export default function MediaTool() {
         )}
       </div>
 
-      {/* Slot Google Ads — MEDIO (entre input y resultados) */}
-      {!result && !loading && <AdSlot id="ad-slot-middle" label="Publicidad" />}
+      {/* Slot Google Ads — MEDIO */}
+      {!result && !loading && <AdSlot id="ad-slot-middle" />}
 
       {/* Resultados */}
       {result && (
         <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
 
-          {/* Info del video */}
+          {/* Info del contenido */}
           <div className="flex gap-4 p-5 border-b border-gray-100">
             {result.thumbnail && (
               <div className="w-20 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
@@ -215,15 +214,20 @@ export default function MediaTool() {
               <p className="text-gray-800 font-semibold text-sm leading-snug line-clamp-2 mb-1">
                 {result.title}
               </p>
-              {result.author && (
-                <p className="text-gray-400 text-xs">@{result.author.replace('@', '')}</p>
-              )}
+              <div className="flex items-center gap-3">
+                {result.author && (
+                  <p className="text-gray-400 text-xs">@{result.author.replace('@', '')}</p>
+                )}
+                {result.duration && (
+                  <p className="text-gray-400 text-xs">⏱ {result.duration}</p>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Slot Google Ads — entre info y botones */}
           <div className="px-5">
-            <AdSlot id="ad-slot-results" label="Publicidad" />
+            <AdSlot id="ad-slot-results" />
           </div>
 
           {/* Botones de descarga */}
@@ -234,11 +238,13 @@ export default function MediaTool() {
                 key={format.label}
                 onClick={() => handleDownload(format)}
                 disabled={downloading === format.label}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all active:scale-95 ${
-                  format.type === 'video'
-                    ? 'border-blue-100 bg-blue-50 hover:bg-blue-100 text-blue-700'
-                    : 'border-violet-100 bg-violet-50 hover:bg-violet-100 text-violet-700'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all active:scale-95 cursor-pointer ${
+                  format.type === 'audio'
+                    ? 'border-violet-100 bg-violet-50 hover:bg-violet-100 text-violet-700'
+                    : format.type === 'image'
+                    ? 'border-green-100 bg-green-50 hover:bg-green-100 text-green-700'
+                    : 'border-blue-100 bg-blue-50 hover:bg-blue-100 text-blue-700'
+                } disabled:opacity-60 disabled:cursor-not-allowed`}
               >
                 <span className="flex items-center gap-2 font-medium text-sm">
                   {FORMAT_ICONS[format.type]}
@@ -263,17 +269,17 @@ export default function MediaTool() {
       )}
 
       {/* Slot Google Ads — BOTTOM */}
-      <AdSlot id="ad-slot-bottom" label="Publicidad" />
+      <AdSlot id="ad-slot-bottom" />
 
       {/* Instrucciones */}
       <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100 mt-2">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">¿Cómo usar?</p>
         <ol className="space-y-2">
           {[
-            'Copia el link del contenido en TikTok, YouTube o Instagram',
-            'Pégalo en el campo de arriba y presiona Obtener',
-            'Elige el formato que prefieras (video o audio)',
-            'Listo — el archivo se descarga automáticamente',
+            'Copia el enlace del contenido en TikTok, YouTube o Instagram',
+            'Pégalo en el campo de arriba y presiona Analizar',
+            'Elige el formato de exportación que prefieras',
+            'El archivo se descargará automáticamente',
           ].map((step, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-gray-500">
               <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
